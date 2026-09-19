@@ -16,6 +16,8 @@ Deploy button dabane se pehle **Environment Variables** section kholo:
 |---|---|---|
 | `ADMIN_PASSWORD` | apna strong password | ✅ |
 | `ADMIN_JWT_SECRET` | `openssl rand -base64 48` ka output | ✅ |
+| `UPSTASH_REDIS_REST_URL` | Upstash se (neeche Step 3) | ✅ data bachane ke liye |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash se | ✅ |
 | `TELEGRAM_BOT_TOKEN` | BotFather se | optional |
 | `TELEGRAM_CHAT_ID` | jahan notifications chahiye | optional |
 | `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app` | optional |
@@ -27,13 +29,33 @@ Teeno environments (Production / Preview / Development) me tick lagao.
 > openssl rand -base64 48
 > ```
 
-## Step 3 — Deploy
+## Step 3 — Upstash Redis (data permanent karne ke liye)
+
+Ye skip kiya to orders/visitors cold start pe **reset ho jayenge**. 2 minute ka kaam hai, free hai.
+
+1. [console.upstash.com](https://console.upstash.com) pe signup (GitHub se ho jata hai)
+2. **Create Database**
+   - Name: `timepass`
+   - Type: **Regional**
+   - Region: **ap-south-1 (Mumbai)** ← India ke liye sabse fast
+3. Database khulne ke baad neeche **REST API** section → **.env** tab dabao
+4. Do lines dikhengi — dono Vercel env variables me paste karo:
+   ```
+   UPSTASH_REDIS_REST_URL=https://xxxx.upstash.io
+   UPSTASH_REDIS_REST_TOKEN=AXXXxxxx...
+   ```
+
+Verify: deploy ke baad `/admin/settings` kholo → **Environment Health** me
+`UPSTASH_REDIS_REST_URL` **SET** aur Storage **UPSTASH REDIS · persistent** dikhna chahiye.
+Agar amber warning banner dikhe to matlab env vars nahi lage.
+
+## Step 4 — Deploy
 
 **Deploy** dabao. ~60 second me live.
 
 ---
 
-## Step 4 — Verify (deploy ke baad)
+## Step 5 — Verify (deploy ke baad)
 
 ```bash
 SITE=https://your-domain.vercel.app
@@ -72,13 +94,17 @@ Notifications jo aayengi:
 
 ---
 
-## ⚠️ Storage note
+## ⚠️ Storage
 
-Vercel serverless ka filesystem read-only hai → orders/visitors **memory me** rehte hain aur cold start (~15 min idle) pe reset ho jate hain.
+App khud detect kar leta hai:
 
-Admin panel amber banner dikhayega jab aisa ho.
+| Setup | Storage | Data bachta hai? |
+|---|---|---|
+| Upstash env vars set | **Upstash Redis** | ✅ hamesha |
+| Env vars nahi | Memory | ❌ cold start pe reset |
 
-**Permanent karne ke liye:** README ka *"Database upgrade"* section — Upstash Redis 2 minute me lag jata hai aur `lib/db.ts` ke alawa kuch change nahi karna padta.
+Admin → **Settings → Environment Health** me live status dikhta hai.
+Agar amber warning banner dikhe to Step 3 dobara check karo.
 
 ---
 

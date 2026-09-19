@@ -111,42 +111,34 @@ Har `git push` pe auto-deploy ho jayega.
 
 ---
 
-## 💾 Database upgrade (important)
+## 💾 Database — Upstash Redis
 
-Abhi storage **file-backed JSON** hai (`lib/db.ts`):
-- **Local dev** → `.data/store.json` me persist hota hai ✅
-- **Vercel serverless** → filesystem read-only hai, isliye data **memory me** rehta hai aur cold start pe reset ho jata hai ⚠️
-  (Admin panel me amber banner isi ka warning dikhata hai.)
+`lib/db.ts` **auto-detecting adapter** hai. Koi code change nahi karna:
 
-Permanent storage ke liye `lib/db.ts` ke exported functions ka body swap kar do — baaki app ko kuch pata nahi chalega:
+| Env vars mile? | Storage | Permanent? |
+|---|---|---|
+| ✅ Upstash configured | **Upstash Redis** | Haan ✅ |
+| ❌ local dev | `.data/store.json` | Haan (local) ✅ |
+| ❌ Vercel (read-only FS) | Memory | Nahi ⚠️ cold start pe reset |
 
-```
-listOrders · getOrder · createOrder · updateOrder · deleteOrder
-listVisitors · addVisitor · clearVisitors
-getSettings · saveSettings
-```
+Admin → **Settings → Environment Health** me live dikhta hai ki abhi konsa backend chal raha hai.
 
-**Recommended: Upstash Redis** (free tier, 2 min setup)
-```bash
-npm i @upstash/redis
-```
-```ts
-import { Redis } from "@upstash/redis";
-const redis = Redis.fromEnv();  // KV_REST_API_URL + KV_REST_API_TOKEN
+### Setup (2 minute, free)
 
-export async function listOrders(): Promise<Order[]> {
-  return (await redis.get<Order[]>("orders")) ?? [];
-}
-export async function createOrder(input) {
-  const orders = await listOrders();
-  const order = { ...input, id: newOrderId(), status: "pending",
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString() };
-  await redis.set("orders", [order, ...orders].slice(0, 1000));
-  return order;
-}
-// …baaki functions bhi isi pattern pe
-```
+1. [console.upstash.com](https://console.upstash.com) → **Create Database**
+   - Type: **Regional**, Region: **ap-south-1 (Mumbai)** — India ke liye fastest
+2. Database khol ke **REST API** section → ye 2 copy karo:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
+3. Vercel → Project → **Settings → Environment Variables** → dono paste karo
+4. **Redeploy**
+
+Bas. Ab orders, visitors aur settings permanently save honge — cold start, redeploy, kuch se farak nahi padega.
+
+> **Vercel KV** use kar rahe ho? `KV_REST_API_URL` / `KV_REST_API_TOKEN` bhi
+> automatically detect ho jate hain — kuch extra nahi karna.
+
+Redis keys: `tp:orders` · `tp:visitors` · `tp:settings`
 
 ---
 

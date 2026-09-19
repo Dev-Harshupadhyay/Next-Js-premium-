@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Zap, Lock, Headset } from "lucide-react";
 import { SITE } from "@/lib/config";
+import { WelcomeBookmark } from "./WelcomeBookmark";
 
 export function Hero() {
   return (
@@ -38,6 +39,8 @@ export function Hero() {
             LIVE · INSTANT VERIFICATION
           </span>
         </div>
+
+        <WelcomeBookmark />
       </div>
 
       <div className="mt-9 grid grid-cols-3 gap-2.5 sm:gap-3">

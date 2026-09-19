@@ -8,7 +8,9 @@ export function EnvStatus({
     telegramChat: boolean;
     adminPassword: boolean;
     jwtSecret: boolean;
+    redis: boolean;
     persistent: boolean;
+    storage: string;
   };
 }) {
   const rows = [
@@ -31,6 +33,11 @@ export function EnvStatus({
       key: "ADMIN_JWT_SECRET",
       ok: env.jwtSecret,
       hint: "Session sign karne ke liye (fallback: ADMIN_PASSWORD)",
+    },
+    {
+      key: "UPSTASH_REDIS_REST_URL",
+      ok: env.redis,
+      hint: "Orders/visitors permanently save karne ke liye",
     },
   ];
 
@@ -71,11 +78,14 @@ export function EnvStatus({
             </p>
           </div>
           <span
-            className={`shrink-0 text-[10px] font-extrabold tracking-[1.1px] ${
+            className={`shrink-0 text-right text-[10px] font-extrabold uppercase tracking-[1.1px] ${
               env.persistent ? "text-lime" : "text-amber"
             }`}
           >
-            {env.persistent ? "DISK (persistent)" : "MEMORY (ephemeral)"}
+            {env.storage}
+            <span className="mt-0.5 block text-[9px] font-bold tracking-[1px] opacity-70">
+              {env.persistent ? "persistent" : "ephemeral"}
+            </span>
           </span>
         </div>
       </div>

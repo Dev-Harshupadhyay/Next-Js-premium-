@@ -1,6 +1,6 @@
 import { Aurora } from "@/components/ui/Aurora";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { isPersistent } from "@/lib/db";
+import { isPersistent, storageLabel } from "@/lib/db";
 
 export default function DashboardLayout({
   children,
@@ -10,7 +10,9 @@ export default function DashboardLayout({
   return (
     <>
       <Aurora />
-      <AdminShell persistent={isPersistent()}>{children}</AdminShell>
+      <AdminShell persistent={isPersistent()} storage={storageLabel()}>
+        {children}
+      </AdminShell>
     </>
   );
 }

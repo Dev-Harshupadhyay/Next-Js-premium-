@@ -1,5 +1,5 @@
 import { SettingsForm } from "@/components/admin/SettingsForm";
-import { getSettings, isPersistent } from "@/lib/db";
+import { getSettings, isPersistent, isRedis, storageLabel } from "@/lib/db";
 import { EnvStatus } from "@/components/admin/EnvStatus";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,9 @@ export default async function AdminSettingsPage() {
     telegramChat: Boolean(process.env.TELEGRAM_CHAT_ID),
     adminPassword: Boolean(process.env.ADMIN_PASSWORD),
     jwtSecret: Boolean(process.env.ADMIN_JWT_SECRET),
+    redis: isRedis(),
     persistent: isPersistent(),
+    storage: storageLabel(),
   };
 
   return (

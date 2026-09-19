@@ -28,9 +28,11 @@ const NAV = [
 export function AdminShell({
   children,
   persistent,
+  storage,
 }: {
   children: ReactNode;
   persistent: boolean;
+  storage: string;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -146,10 +148,11 @@ export function AdminShell({
           <div className="flex items-start gap-2.5 border-b border-amber/25 bg-amber/10 px-4 py-2.5 text-[11px] leading-relaxed text-amber sm:px-6">
             <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
             <span>
-              <b>Ephemeral storage:</b> ye deployment read-only filesystem pe
-              chal raha hai, isliye data sirf memory me hai aur cold start pe
-              reset ho jayega. Permanent storage ke liye README ka{" "}
-              <b>&ldquo;Database upgrade&rdquo;</b> section dekho.
+              <b>Ephemeral storage ({storage}):</b> data sirf memory me hai aur
+              cold start pe reset ho jayega. Permanent karne ke liye Vercel me{" "}
+              <code className="font-mono">UPSTASH_REDIS_REST_URL</code> +{" "}
+              <code className="font-mono">UPSTASH_REDIS_REST_TOKEN</code> add
+              karo — code change nahi karna.
             </span>
           </div>
         ) : null}
