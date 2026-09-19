@@ -40,7 +40,22 @@ export async function computeStats(): Promise<AdminStats> {
     (visitor) => istDateKey(visitor.time) === today,
   );
 
+  // "Kitne logo ne purchase kiya" — sirf wo jinka paisa aaya
+  // (paid = claim kiya, active = verify ho gaya). Pending count nahi hota.
+  const buyers = orders.filter(
+    (order) => order.status === "paid" || order.status === "active",
+  );
+  const monthPrefix = today.slice(0, 7); // YYYY-MM
+
   return {
+    buyers: {
+      total: buyers.length,
+      today: buyers.filter((order) => istDateKey(order.createdAt) === today)
+        .length,
+      thisMonth: buyers.filter((order) =>
+        istDateKey(order.createdAt).startsWith(monthPrefix),
+      ).length,
+    },
     orders: {
       total: orders.length,
       pending: pending.length,

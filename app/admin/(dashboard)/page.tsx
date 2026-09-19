@@ -9,6 +9,8 @@ import {
   Smartphone,
   Globe2,
   ArrowRight,
+  ShoppingBag,
+  Inbox,
 } from "lucide-react";
 import { StatCard } from "@/components/admin/StatCard";
 import { TimelineChart } from "@/components/admin/Chart";
@@ -23,6 +25,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminOverview() {
   const [stats, orders] = await Promise.all([computeStats(), listOrders()]);
   const recent = orders.slice(0, 6);
+  const hasData = orders.length > 0 || stats.visitors.total > 0;
 
   return (
     <div className="space-y-5">
@@ -36,6 +39,72 @@ export default async function AdminOverview() {
         </p>
       </header>
 
+      {/* ── Headline: kitne logo ne purchase kiya ── */}
+      <div className="glass relative overflow-hidden rounded-3xl p-6 text-center sm:p-8">
+        <div
+          aria-hidden
+          className="grad-bg pointer-events-none absolute -top-24 left-1/2 size-56 -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+        />
+        <div className="relative">
+          <p className="eyebrow text-accent-soft">
+            Kitne Logo Ne Purchase Kiya
+          </p>
+          <p className="text-grad mt-2 font-display text-6xl font-extrabold leading-none sm:text-7xl">
+            {stats.buyers.total}
+          </p>
+          <p className="mt-2.5 text-[12.5px] text-muted">
+            {stats.buyers.total === 0
+              ? "Abhi tak koi purchase nahi hua"
+              : `${stats.buyers.total} customer${stats.buyers.total === 1 ? "" : "s"} ne paisa bheja hai`}
+          </p>
+
+          <div className="mx-auto mt-6 grid max-w-md grid-cols-3 gap-3 border-t border-line pt-5">
+            <MiniStat label="Aaj" value={stats.buyers.today} tone="lime" />
+            <MiniStat
+              label="Is Mahine"
+              value={stats.buyers.thisMonth}
+              tone="accent"
+            />
+            <MiniStat
+              label="Pending"
+              value={stats.orders.pending}
+              tone="amber"
+            />
+          </div>
+
+          {stats.orders.pending > 0 ? (
+            <Link
+              href="/admin/orders?status=pending"
+              className="grad-bg mt-6 inline-flex items-center gap-2 rounded-2xl px-5 py-3 font-display text-[11.5px] font-extrabold tracking-[1.3px] text-white transition hover:brightness-110 active:scale-[0.98]"
+            >
+              REVIEW {stats.orders.pending} PENDING{" "}
+              <ArrowRight className="size-3.5" />
+            </Link>
+          ) : null}
+        </div>
+      </div>
+
+      {!hasData ? (
+        <div className="glass rounded-2xl px-6 py-14 text-center">
+          <Inbox className="mx-auto size-9 text-faint" />
+          <p className="mt-4 font-display text-[14px] font-extrabold">
+            Dashboard abhi khaali hai
+          </p>
+          <p className="mx-auto mt-2 max-w-sm text-[12px] leading-relaxed text-faint">
+            Koi bhi fake ya demo data nahi hai — sirf real customers dikhenge.
+            Jaise hi koi site pe aayega ya plan kharidega, sab kuch yahan
+            real-time update hoga.
+          </p>
+          <Link
+            href="/"
+            target="_blank"
+            className="glass-soft mt-5 inline-flex items-center gap-2 rounded-xl border border-line px-4 py-2.5 font-display text-[10.5px] font-extrabold tracking-[1.2px] text-muted transition hover:border-accent hover:text-white"
+          >
+            OPEN LIVE SITE <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Booked Revenue"
@@ -45,10 +114,10 @@ export default async function AdminOverview() {
           tone="lime"
         />
         <StatCard
-          label="Total Orders"
-          value={stats.orders.total}
-          sub={`${stats.orders.today} aaj`}
-          icon={<ShoppingCart className="size-4" />}
+          label="Paying Customers"
+          value={stats.buyers.total}
+          sub={`${stats.orders.total} total orders`}
+          icon={<ShoppingBag className="size-4" />}
           tone="accent"
         />
         <StatCard
@@ -93,15 +162,6 @@ export default async function AdminOverview() {
                 tone="pink"
               />
             </div>
-            {stats.orders.pending > 0 ? (
-              <Link
-                href="/admin/orders?status=pending"
-                className="grad-bg mt-4 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-display text-[11px] font-extrabold tracking-[1.2px] text-white transition hover:brightness-110"
-              >
-                REVIEW {stats.orders.pending} PENDING{" "}
-                <ArrowRight className="size-3.5" />
-              </Link>
-            ) : null}
           </div>
 
           <div className="glass rounded-2xl p-5">
@@ -167,7 +227,7 @@ export default async function AdminOverview() {
 
         {recent.length === 0 ? (
           <p className="py-8 text-center text-[12px] text-faint">
-            Abhi koi order nahi. Pehla order aate hi yahan dikhega.
+            Abhi koi order nahi — pehla real order aate hi yahan dikhega.
           </p>
         ) : (
           <div className="mt-4 space-y-2">
@@ -198,6 +258,33 @@ export default async function AdminOverview() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function MiniStat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number;
+  tone: "accent" | "cyan" | "lime" | "pink" | "amber";
+}) {
+  const tones = {
+    accent: "text-accent-soft",
+    cyan: "text-cyan",
+    lime: "text-lime",
+    pink: "text-pink",
+    amber: "text-amber",
+  } as const;
+
+  return (
+    <div>
+      <p className={`font-display text-2xl font-extrabold ${tones[tone]}`}>
+        {value}
+      </p>
+      <p className="eyebrow mt-1">{label}</p>
     </div>
   );
 }

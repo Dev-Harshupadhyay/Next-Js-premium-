@@ -75,6 +75,12 @@ export interface Settings {
 }
 
 export interface AdminStats {
+  /** Actual paying customers — paid + active (pending = abhi paisa nahi aaya) */
+  buyers: {
+    total: number;
+    today: number;
+    thisMonth: number;
+  };
   orders: {
     total: number;
     pending: number;
