@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════
+   AURORA GLASS — design tokens
+   Original site ka look preserved, ab proper design system
+   ═══════════════════════════════════════════════════════ */
+@theme {
+  --color-bg: #06070e;
+  --color-bg-soft: #0b0d1a;
+  --color-bg-card: #0d0f1c;
+
+  --color-ink: #eef0ff;
+  --color-muted: #9aa0b8;
+  --color-faint: #6b7085;
+
+  --color-accent: #8b5cf6;
+  --color-accent-soft: #a78bfa;
+  --color-cyan: #22d3ee;
+  --color-pink: #ec4899;
+  --color-lime: #a3e635;
+  --color-amber: #fbbf24;
+
+  --color-line: rgba(255, 255, 255, 0.11);
+  --color-line-hi: rgba(255, 255, 255, 0.22);
+
+  --radius-xl2: 24px;
+
+  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), ui-monospace, monospace;
+
+  --animate-drift-1: drift1 26s ease-in-out infinite alternate;
+  --animate-drift-2: drift2 32s ease-in-out infinite alternate;
+  --animate-drift-3: drift3 24s ease-in-out infinite alternate;
+  --animate-beam: beam 3s linear infinite;
+  --animate-shine: shine 4.5s ease-in-out infinite;
+  --animate-pulse-soft: pulseSoft 2.4s ease-in-out infinite;
+  --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes drift1 {
+  to { transform: translate(9vw, 7vh) scale(1.12); }
+}
+@keyframes drift2 {
+  to { transform: translate(-8vw, -9vh) scale(1.08); }
+}
+@keyframes drift3 {
+  to { transform: translate(-10vw, 8vh) scale(0.9); }
+}
+@keyframes beam {
+  to { transform: rotate(360deg); }
+}
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  55%, 100% { transform: translateX(100%); }
+}
+@keyframes pulseSoft {
+  50% { opacity: 0.5; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ─────────── base ─────────── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.55;
+  overflow-x: hidden;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+::selection {
+  background: rgba(139, 92, 246, 0.5);
+  color: #fff;
+}
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: #08090f; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7c3aed, #0891b2);
+  border-radius: 99px;
+  border: 2px solid #08090f;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─────────── utilities ─────────── */
+@utility glass {
+  background: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.07),
+    rgba(255, 255, 255, 0.028)
+  );
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow:
+    0 10px 34px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+@utility glass-soft {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+@utility text-grad {
+  background: linear-gradient(100deg, #8b5cf6, #22d3ee);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility grad-bg {
+  background: linear-gradient(100deg, #8b5cf6, #22d3ee);
+}
+
+@utility eyebrow {
+  font-size: 9px;
+  letter-spacing: 2.4px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--color-faint);
+}
+
+/* Animated conic border — "beam" buttons from the original */
+.beam-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 1.5px;
+  display: block;
+  width: 100%;
+}
+.beam-btn::before {
+  content: "";
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #8b5cf6 60deg,
+    #22d3ee 120deg,
+    transparent 200deg
+  );
+  animation: var(--animate-beam);
+  z-index: -1;
+}
+.beam-btn > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 14.5px;
+  background: #0b0d1a;
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 1.6px;
+  color: #fff;
+  transition: background 0.2s;
+}
+.beam-btn:hover > span {
+  background: #131628;
+}
+.beam-btn:active {
+  transform: scale(0.98);
+}
+
+/* Shine sweep for the UPI card */
+.shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.22),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: var(--animate-shine);
+  pointer-events: none;
+}
+
+.grain {
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.028) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
