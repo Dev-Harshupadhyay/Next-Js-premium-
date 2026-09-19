@@ -24,8 +24,17 @@ const spaceMono = Space_Mono({
   display: "swap",
 });
 
+/** Double safety: SITE.url already validated hai, phir bhi build yahan na ruke. */
+function safeMetadataBase(): URL | undefined {
+  try {
+    return new URL(SITE.url);
+  } catch {
+    return undefined;
+  }
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
+  metadataBase: safeMetadataBase(),
   title: {
     default: `${SITE.name} | Official`,
     template: `%s · ${SITE.shortName}`,
